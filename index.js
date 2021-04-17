@@ -23,6 +23,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
   const eventsCollection = client.db("eventManagement").collection("events");
   const reviewCollection = client.db("eventManagement").collection("reviews");
+  const ordersCollection = client.db("eventManagement").collection("orders");
   console.log('connected')
 
   app.post('/addEvent', (req, res) => {
@@ -65,6 +66,20 @@ client.connect(err => {
   })
 
 
+  app.post('/addOrder', (req, res) => {
+    const newOrder = req.body;
+    ordersCollection.insertOne(newOrder)
+      .then(result => {
+        console.log(result.insertedCount)
+      })
+  })
+
+  app.get('/orders', (req, res) => {
+    ordersCollection.find({email: req.query.email})
+      .toArray((err, reviews) => {
+        res.send(reviews)
+      })
+  })
 
 
 
