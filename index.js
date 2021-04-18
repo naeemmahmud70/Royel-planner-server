@@ -24,6 +24,7 @@ client.connect(err => {
   const eventsCollection = client.db("eventManagement").collection("events");
   const reviewCollection = client.db("eventManagement").collection("reviews");
   const ordersCollection = client.db("eventManagement").collection("orders");
+  const adminCollection = client.db("eventManagement").collection("admin");
   console.log('connected')
 
   app.post('/addEvent', (req, res) => {
@@ -75,9 +76,25 @@ client.connect(err => {
   })
 
   app.get('/orders', (req, res) => {
-    ordersCollection.find({email: req.query.email})
+    ordersCollection.find({ email: req.query.email })
       .toArray((err, reviews) => {
         res.send(reviews)
+      })
+  })
+
+  app.post('/addAdmin', (req, res) => {
+    const newAdmin = req.body;
+    adminCollection.insertOne(newAdmin)
+      .then(result => {
+        console.log(result.insertedCount)
+      })
+  })
+
+  app.post('/isAdmin', (req, res) => {
+    const email = req.body.email;
+    adminCollection.find({ email: email })
+      .toArray((err, admin) => {
+        res.send(admin.length > 0)
       })
   })
 
